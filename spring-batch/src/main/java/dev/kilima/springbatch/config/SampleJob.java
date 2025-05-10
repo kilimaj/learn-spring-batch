@@ -14,6 +14,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.PlatformTransactionManager;
 
+import dev.kilima.springbatch.service.SecondTasklet;
+
 @Configuration
 public class SampleJob {
 	
@@ -23,6 +25,9 @@ public class SampleJob {
 	@Autowired
 	private PlatformTransactionManager transactionManager;
 	
+	@Autowired
+	private SecondTasklet secondTask;
+
 	@Bean
 	public Job firstJob() {
 		return new JobBuilder("FirstJob", jobRepository)
@@ -52,18 +57,18 @@ public class SampleJob {
 
 	@Bean
 	public Step secondStep() {
-		return new StepBuilder("SecondStep", jobRepository).tasklet(secondTask(), transactionManager).build();
+		return new StepBuilder("SecondStep", jobRepository).tasklet(secondTask, transactionManager).build();
 	}
 
-	@Bean
-	public Tasklet secondTask() {
-		return new Tasklet() {
-
-			@Override
-			public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
-				System.out.println("This is the Second Tasklet step");
-				return RepeatStatus.FINISHED;
-			}
-		};
-	}
+//	@Bean
+//	public Tasklet secondTask() {
+//		return new Tasklet() {
+//
+//			@Override
+//			public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
+//				System.out.println("This is the Second Tasklet step");
+//				return RepeatStatus.FINISHED;
+//			}
+//		};
+//	}
 }
