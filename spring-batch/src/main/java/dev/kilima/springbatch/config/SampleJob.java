@@ -16,6 +16,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import dev.kilima.springbatch.listener.FirstJobListener;
+import dev.kilima.springbatch.listener.FirstStepListener;
 import dev.kilima.springbatch.service.SecondTasklet;
 
 @Configuration
@@ -33,6 +34,9 @@ public class SampleJob {
 	@Autowired
 	private FirstJobListener firstJobListener;
 
+	@Autowired
+	private FirstStepListener firstStepListener;
+
 	@Bean
 	public Job firstJob() {
 		return new JobBuilder("FirstJob", jobRepository)
@@ -47,6 +51,7 @@ public class SampleJob {
 	public Step firstStep() {
 		return new StepBuilder("FirstStep", jobRepository)
 				.tasklet(firstTask(), transactionManager)
+				.listener(firstStepListener)
 				.build();
 	}
 	
