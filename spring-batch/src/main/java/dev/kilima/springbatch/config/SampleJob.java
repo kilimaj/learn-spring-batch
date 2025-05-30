@@ -84,4 +84,9 @@ public class SampleJob {
 //			}
 //		};
 //	}
+
+	@Bean
+	public Job secondJob() {
+		return new JobBuilder("Second Job", jobRepository).incrementer(new RunIdIncrementer()).build();
+	}
 }
