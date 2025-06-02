@@ -16,6 +16,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import dev.kilima.springbatch.listener.FirstJobListener;
+import dev.kilima.springbatch.listener.FirstStepListener;
 import dev.kilima.springbatch.service.SecondTasklet;
 
 @Configuration
@@ -33,6 +34,9 @@ public class SampleJob {
 	@Autowired
 	private FirstJobListener firstJobListener;
 
+	@Autowired
+	private FirstStepListener firstStepListener;
+
 	@Bean
 	public Job firstJob() {
 		return new JobBuilder("FirstJob", jobRepository)
@@ -47,6 +51,7 @@ public class SampleJob {
 	public Step firstStep() {
 		return new StepBuilder("FirstStep", jobRepository)
 				.tasklet(firstTask(), transactionManager)
+				.listener(firstStepListener)
 				.build();
 	}
 	
@@ -57,6 +62,7 @@ public class SampleJob {
 			@Override
 			public RepeatStatus execute(StepContribution contribution, ChunkContext chunkContext) throws Exception {
 				System.out.println("This is the First tasklet step");
+				System.out.println("SEC = " + chunkContext.getStepContext().getStepExecutionContext());
 				return RepeatStatus.FINISHED;
 			}
 		};
@@ -78,4 +84,9 @@ public class SampleJob {
 //			}
 //		};
 //	}
+
+	@Bean
+	public Job secondJob() {
+		return new JobBuilder("Second Job", jobRepository).incrementer(new RunIdIncrementer()).build();
+	}
 }
